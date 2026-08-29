@@ -6,6 +6,9 @@
 
   <title>STOK DS LINK</title>
 
+  <!-- Barcode Scanner -->
+  <script src="https://unpkg.com/html5-qrcode" type="text/javascript"></script>
+
   <style>
     * {
       box-sizing: border-box;
@@ -20,184 +23,250 @@
 
     /* HEADER */
     .header {
-      background: #1261a8;
+      background: #1565b3;
       color: white;
       text-align: center;
-      font-size: 22px;
+      padding: 22px 15px;
+      font-size: 30px;
       font-weight: bold;
-      padding: 18px 10px;
     }
 
     .container {
       max-width: 900px;
-      margin: auto;
-      padding: 15px;
+      margin: 22px auto;
+      padding: 0 15px;
+    }
+
+    /* SCAN BUTTON */
+    .scan-btn {
+      width: 100%;
+      background: #1565b3;
+      color: white;
+      border: none;
+      border-radius: 12px;
+      padding: 17px;
+      font-size: 18px;
+      font-weight: bold;
+      cursor: pointer;
+      box-shadow: 0 3px 8px rgba(0,0,0,.18);
+    }
+
+    .scan-btn:active {
+      transform: scale(.99);
+    }
+
+    /* SCANNER */
+    #scannerBox {
+      display: none;
+      margin-top: 15px;
+      background: white;
+      padding: 12px;
+      border-radius: 12px;
+      box-shadow: 0 2px 8px rgba(0,0,0,.12);
+    }
+
+    #reader {
+      width: 100%;
+    }
+
+    .close-btn {
+      width: 100%;
+      margin-top: 10px;
+      padding: 13px;
+      background: #555;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      font-size: 15px;
+      cursor: pointer;
+    }
+
+    .camera-info {
+      margin-top: 10px;
+      text-align: center;
+      font-size: 13px;
+      color: #777;
+    }
+
+    .error-box {
+      display: none;
+      margin-top: 10px;
+      background: #fff0f0;
+      color: #c62828;
+      padding: 12px;
+      border-radius: 8px;
+      font-size: 14px;
     }
 
     /* SEARCH */
     .search-box {
       width: 100%;
-      padding: 15px 17px;
-      font-size: 16px;
+      margin-top: 15px;
+      padding: 16px;
       border: 1px solid #ddd;
-      border-radius: 10px;
+      border-radius: 11px;
+      font-size: 16px;
       outline: none;
       background: white;
     }
 
     .search-box:focus {
-      border-color: #1261a8;
-      box-shadow: 0 0 0 2px rgba(18, 97, 168, 0.1);
+      border-color: #1565b3;
+      box-shadow: 0 0 0 2px rgba(21,101,179,.12);
     }
 
-    .info {
-      margin: 12px 3px;
-      color: #666;
-      font-size: 14px;
+    .result-count {
+      margin: 16px 4px 10px;
+      color: #555;
+      font-size: 15px;
     }
 
-    /* LOADING */
-    .loading {
-      text-align: center;
+    /* PRODUCT CARD */
+    .product-card {
       background: white;
-      border-radius: 10px;
-      padding: 30px 15px;
-      margin-top: 15px;
-      color: #666;
-    }
-
-    /* HASIL */
-    .result-list {
-      margin-top: 15px;
-    }
-
-    .product {
-      background: white;
-      border-radius: 12px;
-      margin-bottom: 12px;
-      padding: 16px;
-      box-shadow: 0 2px 7px rgba(0,0,0,0.06);
+      border-radius: 14px;
+      padding: 18px;
+      margin-bottom: 14px;
+      box-shadow: 0 2px 8px rgba(0,0,0,.08);
     }
 
     .product-name {
-      font-size: 17px;
+      font-size: 21px;
       font-weight: bold;
-      margin-bottom: 5px;
-      line-height: 1.35;
+      margin-bottom: 8px;
     }
 
     .plu {
       color: #666;
-      font-size: 14px;
-      margin-bottom: 12px;
+      margin-bottom: 15px;
     }
 
-    /* STOK */
-    .stock-box {
+    .stock-area {
+      background: #f4f4f4;
+      border-radius: 12px;
+      padding: 15px;
       display: flex;
       justify-content: space-between;
       align-items: center;
-      padding: 12px;
-      border-radius: 8px;
-      margin-bottom: 12px;
-      background: #f5f5f5;
+      gap: 10px;
     }
 
     .stock-label {
-      font-size: 13px;
       color: #666;
+      font-size: 15px;
     }
 
     .stock-number {
-      font-size: 22px;
+      font-size: 26px;
       font-weight: bold;
+      margin-top: 3px;
     }
 
     .status {
-      font-size: 12px;
+      padding: 10px 14px;
+      border-radius: 30px;
       font-weight: bold;
-      padding: 6px 9px;
-      border-radius: 20px;
       white-space: nowrap;
+      font-size: 14px;
     }
 
-    .status-available {
-      background: #e7f6ec;
-      color: #16823b;
+    .status-ok {
+      background: #e5f7eb;
+      color: #087b35;
     }
 
-    .status-empty {
-      background: #fdeaea;
-      color: #d93025;
+    .status-habis {
+      background: #eeeeee;
+      color: #555;
     }
 
-    .status-po {
-      background: #fff3cd;
-      color: #9a6700;
+    .status-minus {
+      background: #ffe5e5;
+      color: #c62828;
     }
 
-    /* HARGA */
-    .price-area {
-      border-top: 1px solid #eee;
-      padding-top: 12px;
+    .divider {
+      height: 1px;
+      background: #eee;
+      margin: 18px 0;
     }
 
     .price-row {
       display: flex;
       justify-content: space-between;
-      margin: 7px 0;
-      font-size: 14px;
+      align-items: center;
+      margin: 8px 0;
+      font-size: 16px;
     }
 
-    .price-row .label {
-      color: #666;
+    .price-label {
+      color: #555;
+    }
+
+    .price-value {
+      font-weight: bold;
     }
 
     .discount {
-      color: #d93025;
+      color: #e32620;
       font-weight: bold;
     }
 
     .final-price {
-      font-size: 20px;
+      color: #df2d26;
+      font-size: 27px;
       font-weight: bold;
-      color: #d93025;
     }
 
-    /* KETERANGAN */
-    .note {
-      margin-top: 12px;
-      padding: 10px;
-      background: #f7f7f7;
-      border-radius: 7px;
-      font-size: 13px;
+    .description {
+      background: #f5f5f5;
+      padding: 12px;
+      border-radius: 8px;
+      margin-top: 18px;
       color: #555;
+      font-size: 15px;
     }
 
-    /* EMPTY */
     .empty {
-      text-align: center;
       background: white;
-      border-radius: 10px;
-      padding: 35px 15px;
-      color: #777;
-      margin-top: 15px;
+      border-radius: 12px;
+      padding: 35px 20px;
+      text-align: center;
+      color: #888;
+      margin-top: 10px;
     }
 
-    .count {
-      font-weight: bold;
-      color: #1261a8;
-    }
-
-    /* DESKTOP */
-    @media (min-width: 700px) {
+    /* MOBILE */
+    @media (max-width: 600px) {
 
       .header {
-        font-size: 25px;
+        font-size: 22px;
+        padding: 18px 10px;
       }
 
-      .product {
-        padding: 20px;
+      .container {
+        margin-top: 15px;
+      }
+
+      .product-name {
+        font-size: 18px;
+      }
+
+      .stock-area {
+        align-items: flex-start;
+      }
+
+      .stock-number {
+        font-size: 23px;
+      }
+
+      .status {
+        font-size: 12px;
+        padding: 8px 10px;
+      }
+
+      .final-price {
+        font-size: 23px;
       }
     }
   </style>
@@ -211,566 +280,584 @@
 
   <div class="container">
 
+    <!-- SCAN -->
+    <button class="scan-btn" onclick="startScanner()">
+      📷 SCAN BARCODE
+    </button>
+
+    <div id="scannerBox">
+
+      <div id="reader"></div>
+
+      <div id="cameraError" class="error-box"></div>
+
+      <button class="close-btn" onclick="stopScanner()">
+        Tutup Scanner
+      </button>
+
+      <div class="camera-info">
+        Arahkan kamera ke barcode produk
+      </div>
+
+    </div>
+
+    <!-- SEARCH -->
     <input
       type="text"
-      id="search"
+      id="searchInput"
       class="search-box"
       placeholder="🔎 Cari PLU / nama produk..."
       autocomplete="off"
     >
 
-    <div id="info" class="info">
-      Mengambil data stok...
-    </div>
+    <div id="resultCount" class="result-count"></div>
 
-    <div id="loading" class="loading">
-      ⏳ Mengambil data dari Google Sheet...
+    <div id="results">
+      <div class="empty">
+        🔎<br><br>
+        Silakan scan barcode<br>
+        atau cari PLU / nama produk
+      </div>
     </div>
-
-    <div id="results" class="result-list"></div>
 
   </div>
 
 
-  <script>
+<script>
 
-    /*
-     * URL API Google Apps Script
-     */
-    const API_URL =
-      "https://script.google.com/macros/s/AKfycbzoE0TDGMvqvVmA3_A4UMsa1xC4Gw6YOXcF94McFV9kommywEzh-oHahOVZuyiYdzBzbA/exec";
+  /* ==========================================
+     KONFIGURASI
+  ========================================== */
 
+  const API_URL =
+    "https://script.google.com/macros/s/AKfycbzoE0TDGMvqvVmA3_A4UMsa1xC4Gw6YOXcF94McFV9kommywEzh-oHahOVZuyiYdzBzbA/exec";
 
-    let products = [];
 
+  let products = [];
+  let scanner = null;
+  let scannerRunning = false;
 
-    /*
-     * Ambil data menggunakan JSONP.
-     *
-     * Cara ini dipakai karena browser membatasi
-     * request langsung dari GitHub Pages ke Apps Script.
-     */
-    function loadData() {
 
-      const callbackName =
-        "dsLinkCallback_" + Date.now();
+  /* ==========================================
+     LOAD DATA
+  ========================================== */
 
-      window[callbackName] = function(response) {
+  async function loadData() {
 
-        if (!response || !response.success) {
+    try {
 
-          showError(
-            "Data stok tidak berhasil diambil."
-          );
+      const response = await fetch(API_URL);
 
-          return;
-        }
+      const result = await response.json();
 
-        products = response.data || [];
+      if (result.success) {
 
-        document.getElementById("loading").style.display =
-          "none";
+        products = result.data || [];
 
-        document.getElementById("info").innerHTML =
-          "Data stok: <span class='count'>" +
-          products.length.toLocaleString("id-ID") +
-          "</span> produk";
-
-        /*
-         * Hapus script JSONP setelah selesai
-         */
-        delete window[callbackName];
-
-        const script =
-          document.getElementById(callbackName);
-
-        if (script) {
-          script.remove();
-        }
-      };
-
-
-      const script =
-        document.createElement("script");
-
-      script.id = callbackName;
-
-      script.src =
-        API_URL +
-        "?callback=" +
-        encodeURIComponent(callbackName);
-
-      script.onerror = function() {
-
-        showError(
-          "Gagal menghubungkan aplikasi dengan data stok."
-        );
-
-      };
-
-      document.body.appendChild(script);
-    }
-
-
-    /*
-     * Pencarian
-     */
-    document
-      .getElementById("search")
-      .addEventListener("input", function() {
-
-        const keyword =
-          this.value
-            .trim()
-            .toLowerCase();
-
-        if (!keyword) {
-
-          document.getElementById("results").innerHTML =
-            "";
-
-          document.getElementById("info").innerHTML =
-            "Data stok: <span class='count'>" +
-            products.length.toLocaleString("id-ID") +
-            "</span> produk";
-
-          return;
-        }
-
-        const filtered =
-          products.filter(function(item) {
-
-            const plu =
-              String(item.plu || "")
-                .toLowerCase();
-
-            const nama =
-              String(item.nama || "")
-                .toLowerCase();
-
-            const keterangan =
-              String(item.keterangan || "")
-                .toLowerCase();
-
-            return (
-              plu.includes(keyword) ||
-              nama.includes(keyword) ||
-              keterangan.includes(keyword)
-            );
-
-          });
-
-        renderResults(filtered);
-
-      });
-
-
-    /*
-     * Tampilkan hasil
-     */
-    function renderResults(data) {
-
-      const results =
-        document.getElementById("results");
-
-      results.innerHTML = "";
-
-      document.getElementById("info").innerHTML =
-        "Ditemukan <span class='count'>" +
-        data.length.toLocaleString("id-ID") +
-        "</span> produk";
-
-
-      if (data.length === 0) {
-
-        results.innerHTML = `
-          <div class="empty">
-            🔎<br><br>
-            Produk tidak ditemukan.
-          </div>
-        `;
-
-        return;
-      }
-
-
-      /*
-       * Batasi hasil awal agar halaman tetap ringan.
-       * Bisa kita ubah nanti.
-       */
-      const displayData =
-        data.slice(0, 100);
-
-
-      displayData.forEach(function(item) {
-
-        const product =
-          createProductCard(item);
-
-        results.appendChild(product);
-
-      });
-
-
-      if (data.length > 100) {
-
-        const more =
-          document.createElement("div");
-
-        more.className = "empty";
-
-        more.textContent =
-          "Menampilkan 100 hasil pertama dari " +
-          data.length.toLocaleString("id-ID") +
-          " hasil.";
-
-        results.appendChild(more);
-      }
-    }
-
-
-    /*
-     * Membuat kartu produk
-     */
-    function createProductCard(item) {
-
-      const card =
-        document.createElement("div");
-
-      card.className = "product";
-
-
-      const name =
-        document.createElement("div");
-
-      name.className = "product-name";
-
-      name.textContent =
-        item.nama || "-";
-
-
-      const plu =
-        document.createElement("div");
-
-      plu.className = "plu";
-
-      plu.textContent =
-        "PLU: " + (item.plu || "-");
-
-
-      /*
-       * STOK
-       */
-      const stockBox =
-        document.createElement("div");
-
-      stockBox.className = "stock-box";
-
-
-      const stockLeft =
-        document.createElement("div");
-
-      const stockLabel =
-        document.createElement("div");
-
-      stockLabel.className =
-        "stock-label";
-
-      stockLabel.textContent =
-        "STOK AKHIR";
-
-
-      const stockNumber =
-        document.createElement("div");
-
-      stockNumber.className =
-        "stock-number";
-
-      stockNumber.textContent =
-        formatNumber(item.stok);
-
-
-      stockLeft.appendChild(stockLabel);
-      stockLeft.appendChild(stockNumber);
-
-
-      /*
-       * STATUS STOK
-       */
-      const status =
-        document.createElement("div");
-
-      status.className =
-        "status";
-
-
-      const stockValue =
-        parseStock(item.stok);
-
-
-      if (stockValue > 0) {
-
-        status.classList.add(
-          "status-available"
-        );
-
-        status.textContent =
-          "✓ STOK TERSEDIA";
-
-      } else if (stockValue === 0) {
-
-        status.classList.add(
-          "status-empty"
-        );
-
-        status.textContent =
-          "✕ STOK HABIS";
+        console.log("Data berhasil dimuat:", products.length);
 
       } else {
 
-        /*
-         * Stok minus biasanya berarti
-         * sedang proses PO / restock.
-         */
-        status.classList.add(
-          "status-po"
-        );
-
-        status.textContent =
-          "↻ PROSES PO / RESTOCK";
+        console.error("API gagal:", result);
 
       }
 
+    } catch (error) {
 
-      stockBox.appendChild(stockLeft);
-      stockBox.appendChild(status);
-
-
-      /*
-       * HARGA / DISKON
-       */
-      const priceArea =
-        document.createElement("div");
-
-      priceArea.className =
-        "price-area";
-
-
-      const discountRow =
-        createPriceRow(
-          "Diskon",
-          formatDiscount(item.diskon),
-          "discount"
-        );
-
-
-      const nominalRow =
-        createPriceRow(
-          "Potongan",
-          formatRupiah(item.nominalDisc)
-        );
-
-
-      const finalRow =
-        createPriceRow(
-          "Harga setelah diskon",
-          formatRupiah(item.hargaDiskon),
-          "final-price"
-        );
-
-
-      priceArea.appendChild(discountRow);
-      priceArea.appendChild(nominalRow);
-      priceArea.appendChild(finalRow);
-
-
-      /*
-       * KETERANGAN
-       */
-      let note = null;
-
-      if (item.keterangan) {
-
-        note =
-          document.createElement("div");
-
-        note.className = "note";
-
-        note.textContent =
-          "Keterangan: " +
-          item.keterangan;
-      }
-
-
-      /*
-       * Gabungkan
-       */
-      card.appendChild(name);
-      card.appendChild(plu);
-      card.appendChild(stockBox);
-      card.appendChild(priceArea);
-
-      if (note) {
-        card.appendChild(note);
-      }
-
-
-      return card;
-    }
-
-
-    /*
-     * Baris harga
-     */
-    function createPriceRow(
-      label,
-      value,
-      className
-    ) {
-
-      const row =
-        document.createElement("div");
-
-      row.className =
-        "price-row";
-
-
-      const labelElement =
-        document.createElement("div");
-
-      labelElement.className =
-        "label";
-
-      labelElement.textContent =
-        label;
-
-
-      const valueElement =
-        document.createElement("div");
-
-      if (className) {
-        valueElement.className =
-          className;
-      }
-
-      valueElement.textContent =
-        value;
-
-
-      row.appendChild(labelElement);
-      row.appendChild(valueElement);
-
-
-      return row;
-    }
-
-
-    /*
-     * Format angka
-     */
-    function formatNumber(value) {
-
-      const number =
-        parseStock(value);
-
-      return number.toLocaleString("id-ID");
-    }
-
-
-    /*
-     * Format Rupiah
-     */
-    function formatRupiah(value) {
-
-      if (
-        value === null ||
-        value === undefined ||
-        value === ""
-      ) {
-        return "Rp0";
-      }
-
-      const clean =
-        String(value)
-          .replace(/[^\d-]/g, "");
-
-      const number =
-        Number(clean) || 0;
-
-      return "Rp" +
-        number.toLocaleString("id-ID");
-    }
-
-
-    /*
-     * Format diskon
-     */
-    function formatDiscount(value) {
-
-      if (
-        value === null ||
-        value === undefined ||
-        value === ""
-      ) {
-        return "0%";
-      }
-
-      return String(value) + "%";
-    }
-
-
-    /*
-     * Parse stok
-     */
-    function parseStock(value) {
-
-      if (
-        value === null ||
-        value === undefined ||
-        value === ""
-      ) {
-        return 0;
-      }
-
-      const number =
-        Number(
-          String(value)
-            .replace(/,/g, "")
-            .trim()
-        );
-
-      return isNaN(number)
-        ? 0
-        : number;
-    }
-
-
-    /*
-     * Error
-     */
-    function showError(message) {
-
-      document.getElementById("loading").style.display =
-        "none";
-
-      document.getElementById("info").textContent =
-        "";
+      console.error("Gagal mengambil data:", error);
 
       document.getElementById("results").innerHTML = `
         <div class="empty">
-          ❌<br><br>
-          ${message}
+          ❌ Gagal mengambil data stok.<br><br>
+          Periksa koneksi internet.
         </div>
       `;
+
+    }
+
+  }
+
+
+  /* ==========================================
+     FORMAT RUPIAH
+  ========================================== */
+
+  function rupiah(value) {
+
+    const number = Number(
+      String(value)
+        .replace(/[^0-9-]/g, "")
+    );
+
+    if (isNaN(number)) {
+      return "Rp0";
+    }
+
+    return "Rp" + number.toLocaleString("id-ID");
+
+  }
+
+
+  /* ==========================================
+     STATUS STOK
+  ========================================== */
+
+  function getStockStatus(stock) {
+
+    const number = Number(stock);
+
+    if (number > 0) {
+
+      return {
+        text: "✓ STOK TERSEDIA",
+        className: "status-ok"
+      };
+
+    }
+
+    if (number === 0) {
+
+      return {
+        text: "STOK HABIS",
+        className: "status-habis"
+      };
+
+    }
+
+    return {
+      text: "STOK MINUS",
+      className: "status-minus"
+    };
+
+  }
+
+
+  /* ==========================================
+     SEARCH
+  ========================================== */
+
+  function searchProducts(keyword) {
+
+    keyword = String(keyword || "")
+      .trim()
+      .toLowerCase();
+
+    if (!keyword) {
+
+      document.getElementById("resultCount").innerHTML = "";
+
+      document.getElementById("results").innerHTML = `
+        <div class="empty">
+          🔎<br><br>
+          Silakan scan barcode<br>
+          atau cari PLU / nama produk
+        </div>
+      `;
+
+      return;
     }
 
 
-    /*
-     * Mulai mengambil data
-     */
-    loadData();
+    const filtered = products.filter(product => {
 
-  </script>
+      const plu = String(product.plu || "").toLowerCase();
+
+      const nama = String(product.nama || "").toLowerCase();
+
+      const keterangan =
+        String(product.keterangan || "").toLowerCase();
+
+      return (
+        plu.includes(keyword) ||
+        nama.includes(keyword) ||
+        keterangan.includes(keyword)
+      );
+
+    });
+
+
+    displayProducts(filtered);
+
+  }
+
+
+  /* ==========================================
+     DISPLAY PRODUCT
+  ========================================== */
+
+  function displayProducts(data) {
+
+    const resultCount =
+      document.getElementById("resultCount");
+
+    const results =
+      document.getElementById("results");
+
+
+    resultCount.innerHTML =
+      `Ditemukan <b>${data.length}</b> produk`;
+
+
+    if (data.length === 0) {
+
+      results.innerHTML = `
+        <div class="empty">
+          ❌ Produk tidak ditemukan
+        </div>
+      `;
+
+      return;
+    }
+
+
+    results.innerHTML = data.map(product => {
+
+      const stock =
+        Number(product.stok || 0);
+
+      const status =
+        getStockStatus(stock);
+
+
+      const discount =
+        Number(product.diskon || 0);
+
+
+      const nominalDisc =
+        Number(
+          String(product.nominalDisc || "0")
+            .replace(/[^0-9-]/g, "")
+        );
+
+
+      const hargaDiskon =
+        Number(
+          String(product.hargaDiskon || "0")
+            .replace(/[^0-9-]/g, "")
+        );
+
+
+      return `
+
+        <div class="product-card">
+
+          <div class="product-name">
+            ${escapeHtml(product.nama || "-")}
+          </div>
+
+          <div class="plu">
+            PLU: ${escapeHtml(product.plu || "-")}
+          </div>
+
+
+          <div class="stock-area">
+
+            <div>
+
+              <div class="stock-label">
+                STOK AKHIR
+              </div>
+
+              <div class="stock-number">
+                ${stock}
+              </div>
+
+            </div>
+
+
+            <div class="status ${status.className}">
+              ${status.text}
+            </div>
+
+          </div>
+
+
+          <div class="divider"></div>
+
+
+          <div class="price-row">
+
+            <span class="price-label">
+              Diskon
+            </span>
+
+            <span class="price-value discount">
+              ${discount}%
+            </span>
+
+          </div>
+
+
+          <div class="price-row">
+
+            <span class="price-label">
+              Potongan
+            </span>
+
+            <span class="price-value">
+              ${rupiah(nominalDisc)}
+            </span>
+
+          </div>
+
+
+          <div class="price-row">
+
+            <span class="price-label">
+              Harga setelah diskon
+            </span>
+
+            <span class="final-price">
+              ${rupiah(hargaDiskon)}
+            </span>
+
+          </div>
+
+
+          ${
+            product.keterangan
+            ?
+            `
+              <div class="description">
+                Keterangan:
+                ${escapeHtml(product.keterangan)}
+              </div>
+            `
+            :
+            ""
+          }
+
+        </div>
+
+      `;
+
+    }).join("");
+
+  }
+
+
+  /* ==========================================
+     SCANNER
+  ========================================== */
+
+  async function startScanner() {
+
+    const scannerBox =
+      document.getElementById("scannerBox");
+
+    const errorBox =
+      document.getElementById("cameraError");
+
+
+    scannerBox.style.display = "block";
+
+    errorBox.style.display = "none";
+
+    errorBox.innerHTML = "";
+
+
+    if (scannerRunning) {
+      return;
+    }
+
+
+    scanner =
+      new Html5Qrcode("reader");
+
+
+    const config = {
+
+      fps: 10,
+
+      qrbox: function(width, height) {
+
+        const size =
+          Math.min(width, height) * 0.7;
+
+        return {
+          width: size,
+          height: size
+        };
+
+      },
+
+      aspectRatio: 1.0,
+
+      formatsToSupport: [
+
+        Html5QrcodeSupportedFormats.CODE_128,
+
+        Html5QrcodeSupportedFormats.CODE_39,
+
+        Html5QrcodeSupportedFormats.EAN_13,
+
+        Html5QrcodeSupportedFormats.EAN_8,
+
+        Html5QrcodeSupportedFormats.UPC_A,
+
+        Html5QrcodeSupportedFormats.UPC_E
+
+      ]
+
+    };
+
+
+    try {
+
+      await scanner.start(
+
+        {
+          facingMode: "environment"
+        },
+
+        config,
+
+        onScanSuccess,
+
+        onScanFailure
+
+      );
+
+
+      scannerRunning = true;
+
+
+    } catch (error) {
+
+      console.error("Camera error:", error);
+
+      errorBox.style.display = "block";
+
+      errorBox.innerHTML = `
+        <b>❌ Kamera tidak dapat digunakan</b><br><br>
+
+        Browser menolak akses kamera.<br><br>
+
+        Pastikan izin kamera untuk Chrome
+        sudah diperbolehkan.
+      `;
+
+    }
+
+  }
+
+
+  /* ==========================================
+     SCAN SUCCESS
+  ========================================== */
+
+  async function onScanSuccess(decodedText) {
+
+    console.log("Barcode terbaca:", decodedText);
+
+
+    // Hentikan scanner
+    await stopScanner();
+
+
+    // Masukkan hasil scan ke search box
+    const searchInput =
+      document.getElementById("searchInput");
+
+    searchInput.value = decodedText;
+
+
+    // Cari produk
+    searchProducts(decodedText);
+
+
+    // Scroll ke hasil
+    setTimeout(() => {
+
+      document.getElementById("results")
+        .scrollIntoView({
+          behavior: "smooth",
+          block: "start"
+        });
+
+    }, 100);
+
+  }
+
+
+  function onScanFailure(error) {
+
+    // Sengaja dikosongkan.
+    // Scanner akan terus mencoba membaca barcode.
+
+  }
+
+
+  /* ==========================================
+     STOP SCANNER
+  ========================================== */
+
+  async function stopScanner() {
+
+    if (scanner && scannerRunning) {
+
+      try {
+
+        await scanner.stop();
+
+        scanner.clear();
+
+      } catch (error) {
+
+        console.log(error);
+
+      }
+
+    }
+
+
+    scannerRunning = false;
+
+    scanner = null;
+
+
+    document.getElementById("scannerBox")
+      .style.display = "none";
+
+  }
+
+
+  /* ==========================================
+     ESCAPE HTML
+  ========================================== */
+
+  function escapeHtml(value) {
+
+    return String(value)
+      .replace(/&/g, "&amp;")
+      .replace(/</g, "&lt;")
+      .replace(/>/g, "&gt;")
+      .replace(/"/g, "&quot;")
+      .replace(/'/g, "&#039;");
+
+  }
+
+
+  /* ==========================================
+     SEARCH EVENT
+  ========================================== */
+
+  document
+    .getElementById("searchInput")
+    .addEventListener("input", function() {
+
+      searchProducts(this.value);
+
+    });
+
+
+  /* ==========================================
+     INITIAL LOAD
+  ========================================== */
+
+  loadData();
+
+</script>
 
 </body>
 </html>
