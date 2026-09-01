@@ -113,14 +113,9 @@
 
     .filter-wrap {
       display: flex;
+      flex-wrap: wrap;
       gap: 8px;
-      overflow-x: auto;
       padding: 2px 1px 8px;
-      scrollbar-width: thin;
-    }
-
-    .filter-wrap::-webkit-scrollbar {
-      height: 5px;
     }
 
     .filter-chip {
@@ -336,6 +331,23 @@
       </button>
     </div>
 
+    <div class="filter-title">Status Stok</div>
+
+    <div class="filter-wrap" id="stockFilters">
+      <button class="filter-chip active" data-stock="all">
+        Semua
+      </button>
+      <button class="filter-chip" data-stock="available">
+        ✓ Stok tersedia
+      </button>
+      <button class="filter-chip" data-stock="empty">
+        ○ Stok habis
+      </button>
+      <button class="filter-chip" data-stock="po">
+        ↻ Proses PO / Restock
+      </button>
+    </div>
+
     <div id="resultCount" class="result-count"></div>
 
     <div id="results">
@@ -357,6 +369,7 @@
   let scannerRunning = false;
   let currentKeyword = "";
   let currentMinDiscount = 0;
+  let currentStockFilter = "all";
 
   async function loadData() {
     try {
@@ -424,7 +437,7 @@
     }
 
     return {
-      text: "STOK MINUS",
+      text: "↻ PROSES PO / RESTOCK",
       className: "status-minus"
     };
   }
@@ -452,6 +465,26 @@
     if (currentMinDiscount > 0) {
       data = data.filter(product => {
         return toNumber(product.nominalDisc) >= currentMinDiscount;
+      });
+    }
+
+    if (currentStockFilter !== "all") {
+      data = data.filter(product => {
+        const stock = toNumber(product.stok);
+
+        if (currentStockFilter === "available") {
+          return stock > 0;
+        }
+
+        if (currentStockFilter === "empty") {
+          return stock === 0;
+        }
+
+        if (currentStockFilter === "po") {
+          return stock < 0;
+        }
+
+        return true;
       });
     }
 
@@ -624,17 +657,22 @@
 
     currentKeyword = decodedText.trim();
 
-    // Setelah scan, kembalikan filter ke "Semua"
+    // Setelah scan, kembalikan semua filter ke "Semua"
     // agar produk hasil scan tidak terpotong filter sebelumnya.
     currentMinDiscount = 0;
+    currentStockFilter = "all";
 
     document.querySelectorAll(".filter-chip")
       .forEach(chip => chip.classList.remove("active"));
 
-    const allChip =
-      document.querySelector('.filter-chip[data-min="0"]');
+    const allDiscountChip =
+      document.querySelector('#discountFilters .filter-chip[data-min="0"]');
 
-    if (allChip) allChip.classList.add("active");
+    const allStockChip =
+      document.querySelector('#stockFilters .filter-chip[data-stock="all"]');
+
+    if (allDiscountChip) allDiscountChip.classList.add("active");
+    if (allStockChip) allStockChip.classList.add("active");
 
     applyFilters();
 
@@ -690,13 +728,31 @@
 
       if (!chip) return;
 
-      document.querySelectorAll(".filter-chip")
+      this.querySelectorAll(".filter-chip")
         .forEach(item => item.classList.remove("active"));
 
       chip.classList.add("active");
 
       currentMinDiscount =
         Number(chip.dataset.min) || 0;
+
+      applyFilters();
+    });
+
+  document
+    .getElementById("stockFilters")
+    .addEventListener("click", function(event) {
+      const chip = event.target.closest(".filter-chip");
+
+      if (!chip) return;
+
+      this.querySelectorAll(".filter-chip")
+        .forEach(item => item.classList.remove("active"));
+
+      chip.classList.add("active");
+
+      currentStockFilter =
+        chip.dataset.stock || "all";
 
       applyFilters();
     });
