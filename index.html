@@ -137,6 +137,42 @@
       font-weight: bold;
     }
 
+    .update-data-box {
+      margin-top: 15px;
+      background: white;
+      border-radius: 12px;
+      padding: 12px 14px;
+      box-shadow: 0 2px 8px rgba(0,0,0,.06);
+    }
+
+    .update-btn {
+      width: 100%;
+      padding: 12px 14px;
+      border: 1px solid #1565b3;
+      border-radius: 9px;
+      background: white;
+      color: #1565b3;
+      font-size: 15px;
+      font-weight: bold;
+      cursor: pointer;
+    }
+
+    .update-btn:active {
+      transform: scale(.99);
+    }
+
+    .update-btn:disabled {
+      opacity: .65;
+      cursor: wait;
+    }
+
+    .last-update {
+      margin-top: 8px;
+      text-align: center;
+      color: #777;
+      font-size: 12px;
+    }
+
     .result-count {
       margin: 12px 4px 10px;
       color: #555;
@@ -308,6 +344,15 @@
       autocomplete="off"
     >
 
+    <div class="update-data-box">
+      <button id="updateDataBtn" class="update-btn" onclick="updateData()">
+        🔄 UPDATE DATA
+      </button>
+      <div id="lastUpdate" class="last-update">
+        Data terakhir diperbarui: -
+      </div>
+    </div>
+
     <div class="filter-title">Potongan Diskon</div>
 
     <div class="filter-wrap" id="discountFilters">
@@ -371,16 +416,36 @@
   let currentMinDiscount = 0;
   let currentStockFilter = "all";
 
-  async function loadData() {
+  async function loadData(showLoading = false) {
+    const button = document.getElementById("updateDataBtn");
+
+    if (showLoading && button) {
+      button.disabled = true;
+      button.innerHTML = "⏳ MENGUPDATE DATA...";
+    }
+
     try {
-      const response = await fetch(API_URL);
+      // Cache-busting agar browser meminta data terbaru dari API.
+      const response = await fetch(API_URL + "?t=" + Date.now(), {
+        cache: "no-store"
+      });
+
       const result = await response.json();
 
       if (result.success) {
         products = result.data || [];
+
+        updateLastUpdateTime();
+
         console.log("Data berhasil dimuat:", products.length);
+
+        // Search dan filter yang sedang aktif tetap dipertahankan.
+        applyFilters();
+
+        return true;
       } else {
         console.error("API gagal:", result);
+        return false;
       }
     } catch (error) {
       console.error("Gagal mengambil data:", error);
@@ -391,7 +456,37 @@
           Periksa koneksi internet.
         </div>
       `;
+
+      return false;
+    } finally {
+      if (showLoading && button) {
+        button.disabled = false;
+        button.innerHTML = "🔄 UPDATE DATA";
+      }
     }
+  }
+
+  function updateLastUpdateTime() {
+    const now = new Date();
+
+    const date = now.toLocaleDateString("id-ID", {
+      day: "2-digit",
+      month: "2-digit",
+      year: "numeric"
+    });
+
+    const time = now.toLocaleTimeString("id-ID", {
+      hour: "2-digit",
+      minute: "2-digit",
+      second: "2-digit"
+    });
+
+    document.getElementById("lastUpdate").innerHTML =
+      `Data terakhir diperbarui: <b>${date} ${time}</b>`;
+  }
+
+  async function updateData() {
+    await loadData(true);
   }
 
   function toNumber(value) {
@@ -757,7 +852,7 @@
       applyFilters();
     });
 
-  loadData();
+  loadData(false);
 </script>
 
 </body>
