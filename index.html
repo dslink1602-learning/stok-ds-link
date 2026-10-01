@@ -340,7 +340,7 @@
       type="text"
       id="searchInput"
       class="search-box"
-      placeholder="🔎 Cari PLU / nama produk..."
+      placeholder="🔎 Cari PLU / nama produk / kategori..."
       autocomplete="off"
     >
 
@@ -399,7 +399,7 @@
       <div class="empty">
         🔎<br><br>
         Silakan scan barcode<br>
-        atau cari PLU / nama produk
+        atau cari PLU / nama produk / kategori
       </div>
     </div>
 
@@ -546,12 +546,14 @@
       data = data.filter(product => {
         const plu = String(product.plu || "").toLowerCase();
         const nama = String(product.nama || "").toLowerCase();
+        const kategori = String(product.kategori || "").toLowerCase();
         const keterangan =
           String(product.keterangan || "").toLowerCase();
 
         return (
           plu.includes(keyword) ||
           nama.includes(keyword) ||
+          kategori.includes(keyword) ||
           keterangan.includes(keyword)
         );
       });
